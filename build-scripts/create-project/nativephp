@@ -1,0 +1,10 @@
+#!/bin/env bash
+
+export project_dir=$vendor_dir/$project_name
+
+. $BS_BUILD_SCRIPTS_DIR/laravel
+
+cp $BS_STUBS_DIR/nativephp/php $vendor_dir/
+
+composer require nativephp/electron
+php artisan native:install

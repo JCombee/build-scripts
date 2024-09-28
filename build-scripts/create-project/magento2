@@ -1,0 +1,12 @@
+#!/bin/env bash
+
+export project_name=magento2
+
+export project_dir=$vendor_dir/$project_name
+
+. $BS_LIB_DIR/create-workspace-vendor-dir
+cd $vendor_dir
+
+composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition $project_name
+
+. $BS_LIB_DIR/magento2-build

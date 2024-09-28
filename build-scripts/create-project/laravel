@@ -1,0 +1,40 @@
+#!/bin/env bash
+
+export project_dir=$vendor_dir/$project_name
+
+. $BS_LIB_DIR/create-workspace-vendor-dir
+cd $vendor_dir
+
+composer create-project laravel/laravel $project_name
+
+cd $project_dir
+
+composer install
+
+read -p "Do you wan't to use Alpine JS (yes/no) [no]:" _install_alpinejs
+if [ "${_install_alpinejs}" = "yes" ]; then
+    npm install alpinejs
+    cat $BS_STUBS_DIR/laravel/app.js >> resources/js/app.js
+fi
+
+read -p "Do you wan't to use Livewire (yes/no) [no]:" _install_livewire
+if [ "${_install_livewire}" = "yes" ]; then
+    composer require livewire/livewire
+
+    read -p "Do you wan't to use Livewire Volt (yes/no) [no]:" _install_livewire_volt
+    if [ "${_install_livewire_volt}" = "yes" ]; then
+        composer require livewire/volt
+        php artisan volt:install
+    fi
+fi
+
+
+read -p "Do you wan't to use Tailwind (yes/no) [no]:" _install_tailwind
+if [ "${_install_tailwind}" = "yes" ]; then
+    npm install -D tailwindcss postcss autoprefixer
+    npx tailwindcss init -p
+    cp $BS_STUBS_DIR/laravel/tailwind.config.js tailwind.config.js -f
+    cp $BS_STUBS_DIR/laravel/app.css resources/css/app.css -f
+fi
+
+

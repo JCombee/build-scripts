@@ -1,0 +1,49 @@
+#!/bin/env bash
+
+. $BS_LIB_DIR/create-database
+
+cd $project_dir
+
+# Create the app/etc/env.php file
+bin/magento set:install --backend-frontname=admin \
+    --db-host="${BS_DB_HOST:-db}" --db-user=${BS_USER} --db-password="${BS_DB_PASSWORD}" --db-name="${BS_DB_NAME}" \
+    --search-engine="${SEARCH_ENGINE:-elasticsearch7}" \
+    --elasticsearch-host="${ELASTIC_HOST:-elasticsearch7}" \
+    --elasticsearch-port="${ELASTIC_PORT}" \
+    --elasticsearch-index-prefix=${ELASTIC_INDEX:-${vendor_name}_${project_name}} \
+    ${MAGENTO_INSTALL_ADDITIONAL}
+
+# Set the application to developer mode
+bin/magento deploy:mode:set developer
+
+# Set the base urls
+bin/magento config:set web/unsecure/base_url "https://${vendor_name}.${project_name}.localhost/"
+bin/magento config:set web/secure/base_url "https://${vendor_name}.${project_name}.localhost/"
+
+# Disable 2FA for development
+composer require markshust/magento2-module-disabletwofactorauth
+bin/magento config:set twofactorauth/general/enable 0
+bin/magento config:set twofactorauth/general/enable_for_api_token_generation 0
+
+# Provision Sample Data
+composer require magento/module-catalog-sample-data \
+                 magento/module-configurable-sample-data \
+                 magento/module-cms-sample-data \
+                 magento/module-sales-sample-data
+bin/magento sampledata:deploy
+
+# Create a admin user
+bin/magento admin:user:create \
+    --admin-user=${BS_ADMIN_USER:-${BS_USER}} \
+    --admin-password=${BS_ADMIN_PASSWORD:-Test1234!} \
+    --admin-email=${BS_ADMIN_EMAIL} \
+    --admin-firstname=${BS_ADMIN_FIRSTNAME:-Fullstack} \
+    --admin-lastname=${BS_ADMIN_LASTNAME:-Developer} \
+    || true
+
+cp ${BS_STUBS_DIR}/magento2/.gitignore.stub $project_dir/.gitignore
+
+# Create first commit
+git init
+git add .
+git commit -m "Initial Commit"

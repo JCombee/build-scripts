@@ -1,0 +1,33 @@
+#!/bin/env bash
+
+if [ -z "${BS_PATH}" ]; then
+    echo There is no build-scripts path set!
+    exit 1
+fi
+
+export BS_BUILD_SCRIPTS_DIR="${BS_BUILD_SCRIPTS_DIR:-${BS_PATH}/build-scripts}"
+export BS_LIB_DIR="${BS_LIB_DIR:-${BS_PATH}/lib}"
+export BS_STUBS_DIR="${BS_STUBS_DIR:-${BS_PATH}/stubs}"
+export BS_USER="${BS_USER:-${USER}}"
+
+if [ -z "${BS_WORKSPACE_DIR}" ]; then
+    echo There is no workspce set!
+    exit 1
+fi
+
+if [ -z "${1}" ]; then
+    echo There is no project type set!
+    exit 1
+fi
+export project_type=$1
+
+if [ -z "${2}" ]; then
+    echo There is no vendor name set!
+    exit 1
+fi
+export vendor_name=$2
+export vendor_dir=$BS_WORKSPACE_DIR/$vendor_name
+
+export project_name=$3
+
+sh $BS_BUILD_SCRIPTS_DIR/create-project/$project_type

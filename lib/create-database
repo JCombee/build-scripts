@@ -1,0 +1,6 @@
+#!/bin/env bash
+
+export BS_DB_NAME=${BS_USER}_${vendor_name}_${project_name}
+export _sql="CREATE DATABASE IF NOT EXISTS \`${BS_DB_NAME}\`"
+
+php -r "\$conn = new mysqli('db', '$BS_USER');\$conn->query('$_sql');\$conn->close();"

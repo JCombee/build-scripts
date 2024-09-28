@@ -1,0 +1,17 @@
+#!/bin/env bash
+
+export _default_dir=$(dirname $(dirname $(realpath $0)))
+export _default_workspace_dir=$(realpath ~/workspace)
+
+read -p "Please enter the directory where the build-scripts repository located [${_default_dir}]:" _path
+
+read -p "Please enter the directory where your workspace located [${_default_workspace_dir}]:" _workspace
+
+echo
+echo
+echo "Add this into your .bashrc or .zshrc file:"
+echo
+echo "export PATH=\$PATH:${_path:-${_default_dir}}/bin"
+echo "export BS_PATH=${_path:-${_default_dir}}"
+echo "export BS_WORKSPACE_DIR=${_workspace:-${_default_workspace_dir}}"
+echo
